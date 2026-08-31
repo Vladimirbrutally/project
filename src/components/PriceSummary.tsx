@@ -4,14 +4,15 @@ import { formatCurrency } from "../utils/format";
 interface PriceSummaryProps {
   breakdown: PriceBreakdownType;
   hasModel: boolean;
+  onRequestQuote: () => void;
 }
 
-export function PriceSummary({ breakdown, hasModel }: PriceSummaryProps) {
+export function PriceSummary({ breakdown, hasModel, onRequestQuote }: PriceSummaryProps) {
   return (
     <section className="price-panel">
       <span className="eyebrow">Estimated Price</span>
       <strong className="price">{hasModel ? formatCurrency(breakdown.totalPrice) : "-"}</strong>
-      <button type="button" disabled={!hasModel}>
+      <button type="button" disabled={!hasModel} onClick={onRequestQuote}>
         Request Quote
       </button>
       <div className="breakdown">

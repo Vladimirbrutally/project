@@ -20,7 +20,8 @@ body {
 
 button,
 input,
-select {
+select,
+textarea {
   font: inherit;
 }
 
@@ -243,7 +244,8 @@ a {
 }
 
 .field select,
-.field input {
+.field input,
+.field textarea {
   width: 100%;
   min-height: 44px;
   border: 1px solid #cfd7d2;
@@ -251,6 +253,10 @@ a {
   background: #fbfcfa;
   color: #17201c;
   padding: 9px 11px;
+}
+
+.field textarea {
+  resize: vertical;
 }
 
 .stepper {
@@ -315,6 +321,92 @@ a {
   padding: 20px;
   background: #17201c;
   color: #fff;
+}
+
+.quote-form {
+  display: grid;
+  gap: 16px;
+  border: 1px solid #d6ddd8;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 18px 42px rgba(23, 32, 28, 0.08);
+  padding: 20px;
+}
+
+.section-heading h2 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.quote-fields {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.quote-fields .field:last-child {
+  grid-column: 1 / -1;
+}
+
+.privacy-check {
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+  color: #52615a;
+  font-size: 0.92rem;
+}
+
+.privacy-check input {
+  width: 18px;
+  height: 18px;
+  margin: 2px 0 0;
+}
+
+.quote-form > button {
+  width: min(260px, 100%);
+  padding: 0 16px;
+  background: #156f67;
+  border-color: #156f67;
+  color: #fff;
+  font-weight: 800;
+}
+
+.success-page {
+  display: grid;
+  min-height: 68vh;
+  place-items: center;
+  border-top: 1px solid #d8ded9;
+}
+
+.success-card {
+  display: grid;
+  justify-items: start;
+  gap: 12px;
+  width: min(620px, 100%);
+  border: 1px solid #d6ddd8;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 18px 42px rgba(23, 32, 28, 0.08);
+  padding: 28px;
+}
+
+.success-card h1,
+.success-card p {
+  margin: 0;
+}
+
+.success-card strong {
+  color: #156f67;
+  font-size: clamp(1.7rem, 5vw, 3.2rem);
+}
+
+.success-card button {
+  padding: 0 16px;
+  background: #156f67;
+  border-color: #156f67;
+  color: #fff;
+  font-weight: 800;
 }
 
 .price {
@@ -383,7 +475,8 @@ a {
 
 @media (max-width: 920px) {
   .workbench,
-  .result-panel {
+  .result-panel,
+  .quote-fields {
     grid-template-columns: 1fr;
   }
 
