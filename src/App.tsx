@@ -19,7 +19,13 @@ import {
   pricingConfig,
 } from "./config/pricing";
 import { printer } from "./config/printer";
+import { AdminDashboard } from "./pages/AdminDashboard";
+import { AdminLogin } from "./pages/AdminLogin";
+import { AdminOrderDetail } from "./pages/AdminOrderDetail";
 import { QuoteSuccess } from "./pages/QuoteSuccess";
+import { getCurrentAdminEmail, signInAdmin } from "./services/admin";
+import { submitQuote } from "./services/orders";
+import { isSupabaseConfigured } from "./services/supabase";
 import type { ModelAnalysis } from "./types/model";
 import type { CustomerDetails } from "./types/order";
 import { parseStlFile } from "./utils/analyzeStl";
@@ -27,8 +33,6 @@ import { calculatePrice } from "./utils/calculatePrice";
 import { calculatePrintTime } from "./utils/calculatePrintTime";
 import { calculateWeight } from "./utils/calculateWeight";
 import { generateOrderNumber } from "./utils/orderNumber";
-import { submitQuote } from "./services/orders";
-import { isSupabaseConfigured } from "./services/supabase";
 
 export function App() {
   const [model, setModel] = useState<ModelAnalysis | undefined>();
@@ -46,6 +50,7 @@ export function App() {
   const [submittedOrderNumber, setSubmittedOrderNumber] = useState(
     window.sessionStorage.getItem("lastOrderNumber") ?? "",
   );
+  const [adminEmail, setAdminEmail] = useState<string | null>(null);
   const supabaseConfigured = isSupabaseConfigured();
 
   const selectedMaterial = useMemo(
@@ -103,6 +108,14 @@ export function App() {
     return () => window.removeEventListener("hashchange", handleHashChange);
   }, []);
 
+  useEffect(() => {
+    if (!supabaseConfigured) {
+      return;
+    }
+
+    getCurrentAdminEmail().then(setAdminEmail).catch(() => setAdminEmail(null));
+  }, [route, supabaseConfigured]);
+
   const handleFileSelected = async (file: File) => {
     setIsLoading(true);
     setError(null);
@@ -137,6 +150,27 @@ export function App() {
   const goToCalculator = () => {
     window.location.hash = "#/";
     setRoute("#/");
+  };
+
+  const goToAdminLogin = () => {
+    window.location.hash = "#/admin/login";
+    setRoute("#/admin/login");
+  };
+
+  const goToAdminDashboard = () => {
+    window.location.hash = "#/admin";
+    setRoute("#/admin");
+  };
+
+  const handleAdminLogin = async (email: string, password: string) => {
+    try {
+      await signInAdmin(email, password);
+      setAdminEmail(email);
+      showToast("Signed in");
+      goToAdminDashboard();
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : "Unable to sign in");
+    }
   };
 
   const handleQuoteSubmit = async (customer: CustomerDetails) => {
@@ -194,6 +228,57 @@ export function App() {
       <div id="top" className="app-shell">
         <Navbar />
         <QuoteSuccess orderNumber={submittedOrderNumber || "-"} onBack={goToCalculator} />
+        <Footer />
+        <Toast message={toast} />
+      </div>
+    );
+  }
+
+  if (route === "#/admin/login") {
+    return (
+      <div id="top" className="app-shell">
+        <Navbar />
+        <AdminLogin isConfigured={supabaseConfigured} onLogin={handleAdminLogin} />
+        <Footer />
+        <Toast message={toast} />
+      </div>
+    );
+  }
+
+  if (route.startsWith("#/admin/orders/")) {
+    const orderNumber = decodeURIComponent(route.replace("#/admin/orders/", ""));
+    return (
+      <div id="top" className="app-shell admin-shell">
+        <Navbar />
+        <AdminOrderDetail
+          orderNumber={orderNumber}
+          adminEmail={adminEmail}
+          onRequireLogin={goToAdminLogin}
+          onBack={goToAdminDashboard}
+          onToast={showToast}
+        />
+        <Footer />
+        <Toast message={toast} />
+      </div>
+    );
+  }
+
+  if (route === "#/admin") {
+    return (
+      <div id="top" className="app-shell admin-shell">
+        <Navbar />
+        <AdminDashboard
+          adminEmail={adminEmail}
+          onRequireLogin={goToAdminLogin}
+          onOpenOrder={(orderNumber) => {
+            window.location.hash = `#/admin/orders/${encodeURIComponent(orderNumber)}`;
+          }}
+          onSignedOut={() => {
+            setAdminEmail(null);
+            goToAdminLogin();
+          }}
+          onToast={showToast}
+        />
         <Footer />
         <Toast message={toast} />
       </div>

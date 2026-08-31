@@ -59,6 +59,21 @@ with check (
   and file_path like order_number || '/%'
 );
 
+drop policy if exists "Admins can read orders" on public.orders;
+create policy "Admins can read orders"
+on public.orders
+for select
+to authenticated
+using (true);
+
+drop policy if exists "Admins can update orders" on public.orders;
+create policy "Admins can update orders"
+on public.orders
+for update
+to authenticated
+using (true)
+with check (true);
+
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 values ('quote-stl', 'quote-stl', false, 104857600, array['model/stl', 'application/sla'])
 on conflict (id) do update
@@ -75,3 +90,10 @@ with check (
   bucket_id = 'quote-stl'
   and lower(name) like '3dp-%/%.stl'
 );
+
+drop policy if exists "Admins can read quote STL files" on storage.objects;
+create policy "Admins can read quote STL files"
+on storage.objects
+for select
+to authenticated
+using (bucket_id = 'quote-stl');

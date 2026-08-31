@@ -13,13 +13,13 @@ Implemented:
 - Quote request form
 - Supabase Storage upload and `orders` table insert when env values are configured
 - Hash route success page for GitHub Pages
+- Admin login with Supabase Auth
+- Admin dashboard with status/search filters and revenue summary
+- Admin order detail with final price, status, internal note, and signed STL download
 - Unit tests and visual smoke test
 - GitHub Pages workflow
 
 Not implemented yet:
-- Admin login
-- Admin dashboard
-- Order detail management
 - Email or LINE notifications
 - Real slicer backend
 
@@ -61,6 +61,8 @@ VITE_SUPABASE_ANON_KEY=your-anon-or-publishable-key
 
 The `quote-stl` bucket is private. Do not use a public bucket for customer STL files.
 
+Admin access uses Supabase Auth. Create admin users in the Supabase dashboard. The MVP RLS allows any authenticated user to read/update orders, so use a dedicated project or tighten policies before inviting non-admin users.
+
 ## GitHub Pages
 
 The workflow is in `.github/workflows/deploy.yml`.
@@ -89,4 +91,4 @@ Then pass them into the build workflow if you want quote submission to work on t
 
 ## Next Recommended Step
 
-Phase 3: add Supabase Auth, admin dashboard, order detail page, final price editing, status changes, signed STL downloads, and internal notes.
+Next: add email or LINE notification, stricter admin role policies, and optional real slicer backend.

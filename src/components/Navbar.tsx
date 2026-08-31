@@ -7,7 +7,7 @@ export function Navbar() {
       </a>
       <div className="nav-links">
         <a href="#calculator">Price Calculator</a>
-        <a href="#admin-note">Admin</a>
+        <a href="#/admin">Admin</a>
       </div>
     </nav>
   );
